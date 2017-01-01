@@ -11,10 +11,6 @@ if not Talents then
 else
 	TalentsInit = false
 end
-
-
-print(LoadKeyValues('scripts/npc/npc_heroes_custom.txt'))
-
 -- Actual Code
 function Talents.UnitPrototype_HasTalent(self, talentName)
 	return Talents.unitData[self].learnedTalents[talentName]
@@ -29,13 +25,15 @@ function Talents.ApplyTalent(unit, talentName, talentTable)
         Talents.currTalentFile = 1
     end
 
-    print("Adding a new modifier")
-    PrintTable(modifierTable)
     CustomNetTables:SetTableValue("talent_manager", "last_learned_talent_" .. Talents.currTalentFile, {v = desiredModifierName})
     CustomNetTables:SetTableValue("talent_manager", "server_to_lua_talent_properties_" ..  desiredModifierName, modifierTable)
     LinkLuaModifier(desiredModifierName, "talents/modifier_queue/modifier_talents_" .. Talents.currTalentFile .. ".lua", LUA_MODIFIER_MOTION_NONE)
 
     unit:AddNewModifier(unit, Talents.application_item, desiredModifierName, {})
+
+    if talentTable.Ability then
+        unit:AddAbility(talentTable.Ability)
+    end
 end
 
 --Event Listeners
@@ -48,7 +46,7 @@ function Talents.OnLearnTalent(playerId, keys)
     talentData = talentData["Talents"]
     talentData = talentData["" .. talentRow]
     talentData = talentData[talentName]
-    print("Marking Selected")
+
     Talents.unitData[unit].kv["Talents"][""..talentRow].selected = talentName
 
     CustomNetTables:SetTableValue("talent_manager", "unit_talent_data_" .. unit:GetUnitName(), {levels = Talents.unitData[unit].kv["TalentLevels"], data = Talents.unitData[unit].kv["Talents"]})
