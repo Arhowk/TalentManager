@@ -6,10 +6,19 @@ var LastSelectedUnit = null;
 var Sanitized = false;
 var rows = {};
 var lvl = 0;
-for(var v in rows)
+
+function LocalizeText(text)
 {
-	$.Msg(rows[v]);
+	if ($.Localize("talent_" + text) !== "talent_" + text) {
+		return $.Localize("talent_" + text);
+	}else if($.Localize("DOTA_Tooltip_ability_" + text) !== "DOTA_Tooltip_ability_" + text){
+		return $.Localize("DOTA_Tooltip_ability_" + text);
+	}else{
+		return $.Localize(text);
+	}
 }
+
+
 function SetText(arrOfRows)
 {
 	
@@ -24,14 +33,13 @@ function SetText(arrOfRows)
 	{
 		var row = arrOfRows[i];
 		var index = parseInt(i)+1;
-		var rowPanel = x.FindChildTraverse('UpgradeOption' + index);
+		var rowPanel = x.FindChildTraverse('UpgradeOption' + index); 
 		
 		var left = rowPanel.FindChildTraverse('CleanUpgrade' + (index * 2));
 		var right = rowPanel.FindChildTraverse('CleanUpgrade' + (index * 2 - 1));
 		
-		
-		left.FindChildTraverse("TextLabel").text = row[0];
-		right.FindChildTraverse("TextLabel").text = row[1];
+		left.FindChildTraverse("TextLabel").text = LocalizeText(row[0]);
+		right.FindChildTraverse("TextLabel").text = LocalizeText(row[1]);
 	}
 	
 }
@@ -65,7 +73,6 @@ function CleanBranch(branchTier)
 	x = x.FindChildTraverse('StatBranchColumn')
 	x = x.FindChildTraverse('UpgradeOption' + branchTier);
 	rows[branchTier] = x;
-	$.Msg("Assigning branch tier " + branchTier);
 	
 	if(x.FindChildTraverse('CleanUpgrade'+(branchTier*2)))
 	{  
@@ -139,7 +146,6 @@ function CleanBranch(branchTier)
 	
 	function OnLabelClicked(isLeft)
 	{
-		$.Msg("On Label Clicked");
 		ChooseBranch(branchTier, isLeft);
 	}
 	
@@ -157,10 +163,8 @@ function ChooseBranch(branchTier,isLeft)
 	
 	SetBranchActive(branchTier,false);
 	x.selected = isLeft ? "left" : "right";
-	$.Msg("Chooes Branch");
 	if(isLeft)
 	{
-		$.Msg("Clean " + (branchTier*2) );
 		x.FindChildTraverse("CleanUpgrade" + (branchTier*2)).SetHasClass("BranchChosen", true);
 	}else{
 		x.FindChildTraverse("CleanUpgrade" + (branchTier*2-1)).SetHasClass("BranchChosen", true);
@@ -200,6 +204,7 @@ function ChooseBranch(branchTier,isLeft)
 			}
 		}
 	}else{
+		//$.Msg("Can't Skill Any Talent");
 		$.DispatchEvent("DOTAHUDToggleStatBranchVisibility");
 	}
 	
@@ -269,7 +274,7 @@ function PlayRoarSound()
 
 function CanSkillAnyTalent()
 {
-    if(Entities.GetAbilityPoints(Players.GetLocalPlayerPortraitUnit()) < 1)
+    if(Entities.GetAbilityPoints(Players.GetLocalPlayerPortraitUnit()) < 1 || !Entities.IsControllableByPlayer(Players.GetLocalPlayerPortraitUnit(), Game.GetLocalPlayerID()) )
 	{
 		return false;
 	}else{
@@ -424,7 +429,7 @@ function ChangeToSelected()
 {
 	SetSanitized(false);
 	LastSelectedUnit = Players.GetLocalPlayerPortraitUnit();
-	var table = CustomNetTables.GetTableValue("talent_manager", "unit_talent_data_" + Entities.GetUnitName(LastSelectedUnit));
+	var table = CustomNetTables.GetTableValue("talent_manager", "unit_talent_data_" + LastSelectedUnit); 
 	
 	//Update levels
 	SetLevels(table.levels.split(" "));
@@ -441,9 +446,8 @@ function ChangeToSelected()
 		var right = panel_row.right; 
 		
 		//set the selected status
-		$.Msg(row);
-		var lefttext = $.Localize("talent_" + row["left"].name);
-		var righttext = $.Localize("talent_" + row["right"].name);
+		var lefttext = LocalizeText(row["left"].name);
+		var righttext = LocalizeText(row["right"].name);
 		
 		var leftval = row["left"];
 		leftval = FindValue(leftval);
@@ -532,7 +536,7 @@ function InitCustomClickHandlers()
 		
 		//Update the selected
 		var name = Entities.GetUnitName(Players.GetLocalPlayerPortraitUnit());
-		var table = CustomNetTables.GetTableValue("talent_manager", "unit_talent_data_" + name);
+		var table = CustomNetTables.GetTableValue("talent_manager", "unit_talent_data_" + Players.GetLocalPlayerPortraitUnit())
 		if(LastSelectedUnit !== Players.GetLocalPlayerPortraitUnit() && table)
 		{
 			ChangeToSelected();
@@ -542,7 +546,6 @@ function InitCustomClickHandlers()
 	}
 	TalentTreeTitlePeriodic();
 	
-	$.Msg("Debug");
 	/*
 	 var x = $.GetContextPanel().GetParent().GetParent().GetParent();
 	x = x.FindChildTraverse('HUDElements')
