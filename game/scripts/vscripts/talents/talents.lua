@@ -149,7 +149,7 @@ function Talents.OnUnitCreate(unit)
         --use default talent set
         talentSet = Talents.DeepCopyTable(Talents.talentsKV.DefaultTalentSet["Talents"])
 
-    else
+    elseif first then
         --generate based on DotA talent set
         --ability indexes 10-17
         talentSet = {}
