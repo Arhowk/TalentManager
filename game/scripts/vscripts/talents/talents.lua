@@ -142,7 +142,7 @@ function Talents.OnUnitCreate(unit)
     unit.talentsKVTable = Talents.unitData[unit].kv
 
     local defaultLevels = Talents.talentsKV.DefaultTalentLevels or "10 15 20 25"
-    local talentSet
+    local talentSet = {}
     local first = Talents.GetFirstTalentIndex(unit)
 
     if Talents.talentsKV.DefaultTalentSet then
@@ -152,7 +152,6 @@ function Talents.OnUnitCreate(unit)
     elseif first then
         --generate based on DotA talent set
         --ability indexes 10-17
-        talentSet = {}
         for i =5,8 do
             local left = unit:GetAbilityByIndex(i*2 - (10 - first))
             local right = unit:GetAbilityByIndex(i*2 +1 - (10 - first))
