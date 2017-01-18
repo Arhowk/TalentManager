@@ -1,6 +1,11 @@
 "TalentManifest"
 {
-	"DefaultTalentLevels" "10 20 30 40"
+	"DefaultTalentLevels" "10 20 30 40
+	
+	"DefaultTalentSet"
+	{
+
+	}
 
 	"TalentSets"
 	{
