@@ -574,9 +574,8 @@ function InitCustomClickHandlers()
 		if(LastSelectedUnit !== Players.GetLocalPlayerPortraitUnit() && table)
 		{
 			ChangeToSelected(); 
+		        LastSelectedUnit = Players.GetLocalPlayerPortraitUnit();
 		}
-		LastSelectedUnit = Players.GetLocalPlayerPortraitUnit();
-		$.Msg("Check", table == undefined);
 		SetSanitized(table == undefined);
 		
 		
