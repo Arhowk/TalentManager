@@ -13,6 +13,7 @@
 	
 	<Panel >  
 			
+		<PopupSettings id="Settings" style="margin-left: -5000px;" /> 
 	</Panel>
 
 
